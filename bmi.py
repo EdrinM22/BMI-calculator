@@ -58,6 +58,10 @@ def Bmi_Calculator_Imperial(weightI, heightI):
 
 root = tk.Tk()
 root.geometry("800x600")
+root.resizable(width=False, height=False)
+bg = tk.PhotoImage(file = "BMIBg.png")
+Background = tk.Label( root, image = bg)
+Background.place(x = 0, y = 0)
 root.configure(background='lightblue')
 weight_kg, height_m, weight_lbs, height_in = None, None, None, None
 result_label = None
