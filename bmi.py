@@ -22,6 +22,14 @@ def imperial_clicked():
         height_in.pack()
         tk.Button(root, text="OK", command=calculate_imperial_bmi).pack()
 
+def reset_clicked():
+    tk.Button(root, text="If you are sure please click reset", command=reset_window).pack()
+
+def reset_window():
+    root.destroy()
+
+
+
 def calculate_metrics_bmi():
     bmi = Bmi_Calculator_metrics(float(weight_kg.get()), float(height_m.get()))
     display_result(bmi)
@@ -57,4 +65,6 @@ metrics = tk.Button(root, text="Metrics", command=metrics_clicked)
 metrics.pack()
 imperial = tk.Button(root, text="Imperial", command=imperial_clicked)
 imperial.pack()
+reset = tk.Button(root, text="Reset", command=reset_clicked)
+reset.pack()
 root.mainloop()
