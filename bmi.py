@@ -1,9 +1,11 @@
 import tkinter as tk
 
 weight_kg, height_m, weight_lbs, height_in, result_label, error_label = None, None, None, None, None, None
-input_frame = None  # Define input_frame as a global variable
-metrics_button = None  # Define metrics_button as a global variable
-imperial_button = None  # Define imperial_button as a global variable
+input_frame = None
+metrics_button = None
+imperial_button = None
+history_button = None  # Define history_button as a global variable
+history_list = []  # Store the history of BMI calculations
 
 def metrics_clicked():
     global weight_kg, height_m, result_label, error_label, input_frame, metrics_button, imperial_button
@@ -11,7 +13,7 @@ def metrics_clicked():
         clear_labels()
         if input_frame:
             input_frame.destroy()
-        input_frame = tk.Frame(root, bg='white')  # Create input_frame
+        input_frame = tk.Frame(root, bg='white')
         input_frame.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
         tk.Label(input_frame, text="Enter Weight in kg:").pack()
         weight_kg = tk.Entry(input_frame)
@@ -20,8 +22,9 @@ def metrics_clicked():
         height_m = tk.Entry(input_frame)
         height_m.pack()
         tk.Button(input_frame, text="OK", command=calculate_metrics_bmi).pack()
-        metrics_button.pack_forget()  # Hide the metrics_button
-        imperial_button.pack_forget()  # Hide the imperial_button
+        metrics_button.pack_forget()
+        imperial_button.pack_forget()
+        history_button.pack_forget()  # Hide the history_button when entering new values
 
 def imperial_clicked():
     global weight_lbs, height_in, result_label, error_label, input_frame, metrics_button, imperial_button
@@ -29,7 +32,7 @@ def imperial_clicked():
         clear_labels()
         if input_frame:
             input_frame.destroy()
-        input_frame = tk.Frame(root, bg='white')  # Create input_frame
+        input_frame = tk.Frame(root, bg='white')
         input_frame.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
         tk.Label(input_frame, text="Enter Weight in lbs:").pack()
         weight_lbs = tk.Entry(input_frame)
@@ -38,11 +41,12 @@ def imperial_clicked():
         height_in = tk.Entry(input_frame)
         height_in.pack()
         tk.Button(input_frame, text="OK", command=calculate_imperial_bmi).pack()
-        metrics_button.pack_forget()  # Hide the metrics_button
-        imperial_button.pack_forget()  # Hide the imperial_button
+        metrics_button.pack_forget()
+        imperial_button.pack_forget()
+        history_button.pack_forget()  # Hide the history_button when entering new values
 
 def reset_clicked():
-    global weight_kg, height_m, weight_lbs, height_in, result_label, error_label, input_frame, metrics_button, imperial_button
+    global weight_kg, height_m, weight_lbs, height_in, result_label, error_label, input_frame, metrics_button, imperial_button, history_button
     weight_kg = None
     height_m = None
     weight_lbs = None
@@ -56,12 +60,14 @@ def reset_clicked():
         error_label = None
     if input_frame:
         input_frame.destroy()
-    input_frame = tk.Frame(root, bg='white')  # Create input_frame
+    input_frame = tk.Frame(root, bg='white')
     input_frame.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
     metrics_button = tk.Button(input_frame, text="Metrics", command=metrics_clicked)
     metrics_button.pack(side=tk.LEFT)
     imperial_button = tk.Button(input_frame, text="Imperial", command=imperial_clicked)
     imperial_button.pack(side=tk.LEFT)
+    history_button = tk.Button(input_frame, text="History", command=show_history)
+    history_button.pack(side=tk.LEFT)
 
 def quit_clicked():
     root.destroy()
@@ -83,6 +89,7 @@ def calculate_metrics_bmi():
                 bmi = Bmi_Calculator_metrics(weight, height)
                 display_result(bmi)
                 move_arrow(bmi)
+                history_list.append(bmi)  # Add the BMI calculation to the history list
         except ValueError:
             display_error("Invalid input. Please enter numeric values.")
 
@@ -97,6 +104,7 @@ def calculate_imperial_bmi():
                 bmi = Bmi_Calculator_Imperial(weight, height)
                 display_result(bmi)
                 move_arrow(bmi)
+                history_list.append(bmi)  # Add the BMI calculation to the history list
         except ValueError:
             display_error("Invalid input. Please enter numeric values.")
 
@@ -110,35 +118,34 @@ def display_result(bmi):
     move_arrow(bmi)
 
 def move_arrow(bmi):
-    x_pos = 400  # Initial x-coordinate of the arrow
-    y_pos = 350  # Initial y-coordinate of the arrow
-    arrow_width = 10  # Width of the arrow
+    x_pos = 400
+    y_pos = 350
+    arrow_width = 10
 
-    # Calculate the new x-coordinate based on the BMI value
-    if bmi < 18.5: #underweight
-        x_pos -= arrow_width * 15  # Move left
-    elif bmi > 25 and bmi < 29.9: #overweight
-        x_pos += arrow_width  # Move right
-    elif bmi > 18.5 and bmi < 24.9: #normal
+    if bmi < 18.5:  # underweight
+        x_pos -= arrow_width * 15
+    elif bmi > 25 and bmi < 29.9:  # overweight
+        x_pos += arrow_width
+    elif bmi > 18.5 and bmi < 24.9:  # normal
         x_pos -= arrow_width * 7.5
     elif bmi > 30 and bmi < 34.9:
         x_pos += arrow_width * 7.5
     elif bmi > 35:
         x_pos += arrow_width * 15
 
-    canvas.coords(arrow, x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width)  # Update the arrow position
+    canvas.coords(arrow, x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width,
+                  x_pos + arrow_width, y_pos + arrow_width)
 
 def Bmi_Calculator_metrics(weight, height):
     w = weight
     h = height
-    return w / h**2
+    return w / h ** 2
 
 def Bmi_Calculator_Imperial(weightI, heightI):
     w = weightI
     h = (heightI ** 2)
     return (w / h) * 703
 
-#error handling
 def display_error(message):
     global error_label
     if error_label is None:
@@ -146,6 +153,14 @@ def display_error(message):
         error_label.pack()
     else:
         error_label.config(text=message)
+
+def show_history():
+    top = tk.Toplevel(root)
+    top.title('BMI Calculation History')
+    history_text = tk.Text(top, height=10, width=30)
+    history_text.pack()
+    for i, bmi in enumerate(history_list, start=1):
+        history_text.insert(tk.END, f'BMI Calculation {i}: {bmi:.2f}\n')
 
 root = tk.Tk()
 root.title('BMI Calculator by BodyCalc+')
@@ -165,6 +180,8 @@ metrics_button = tk.Button(input_frame, text="Metrics", command=metrics_clicked)
 metrics_button.pack(side=tk.LEFT)
 imperial_button = tk.Button(input_frame, text="Imperial", command=imperial_clicked)
 imperial_button.pack(side=tk.LEFT)
+history_button = tk.Button(input_frame, text="History", command=show_history)
+history_button.pack(side=tk.LEFT)
 
 reset_button = tk.Button(root, text="Reset", command=reset_clicked)
 reset_button.pack(side=tk.BOTTOM)
@@ -172,9 +189,10 @@ reset_button.pack(side=tk.BOTTOM)
 quit_button = tk.Button(root, text="Quit", command=quit_clicked)
 quit_button.pack(side=tk.BOTTOM)
 
-x_pos = 400  
-y_pos = 350  
-arrow_width = 10  
-arrow = canvas.create_polygon(x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width, fill='black')
+x_pos = 400
+y_pos = 350
+arrow_width = 10
+arrow = canvas.create_polygon(x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width,
+                              y_pos + arrow_width, fill='black')
 
 root.mainloop()
