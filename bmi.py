@@ -1,12 +1,12 @@
 import tkinter as tk
 
-weight_kg, height_m, weight_lbs, height_in, result_label = None, None, None, None, None
+weight_kg, height_m, weight_lbs, height_in, result_label, error_label = None, None, None, None, None, None
 input_frame = None  # Define input_frame as a global variable
 metrics_button = None  # Define metrics_button as a global variable
 imperial_button = None  # Define imperial_button as a global variable
 
 def metrics_clicked():
-    global weight_kg, height_m, result_label, input_frame, metrics_button, imperial_button
+    global weight_kg, height_m, result_label, error_label, input_frame, metrics_button, imperial_button
     if weight_kg is None:
         clear_labels()
         if input_frame:
@@ -24,7 +24,7 @@ def metrics_clicked():
         imperial_button.pack_forget()  # Hide the imperial_button
 
 def imperial_clicked():
-    global weight_lbs, height_in, result_label, input_frame, metrics_button, imperial_button
+    global weight_lbs, height_in, result_label, error_label, input_frame, metrics_button, imperial_button
     if weight_lbs is None:
         clear_labels()
         if input_frame:
@@ -42,7 +42,7 @@ def imperial_clicked():
         imperial_button.pack_forget()  # Hide the imperial_button
 
 def reset_clicked():
-    global weight_kg, height_m, weight_lbs, height_in, result_label, input_frame, metrics_button, imperial_button
+    global weight_kg, height_m, weight_lbs, height_in, result_label, error_label, input_frame, metrics_button, imperial_button
     weight_kg = None
     height_m = None
     weight_lbs = None
@@ -51,6 +51,9 @@ def reset_clicked():
     if result_label is not None:
         result_label.destroy()
         result_label = None
+    if error_label is not None:
+        error_label.destroy()
+        error_label = None
     if input_frame:
         input_frame.destroy()
     input_frame = tk.Frame(root, bg='white')  # Create input_frame
@@ -71,15 +74,31 @@ def clear_labels():
 
 def calculate_metrics_bmi():
     if weight_kg is not None or height_m is not None:
-        bmi = Bmi_Calculator_metrics(float(weight_kg.get()), float(height_m.get()))
-        display_result(bmi)
-        move_arrow(bmi)
+        try:
+            weight = float(weight_kg.get())
+            height = float(height_m.get())
+            if weight <= 0 or height <= 0:
+                display_error("Invalid input. Weight and height must be positive.")
+            else:
+                bmi = Bmi_Calculator_metrics(weight, height)
+                display_result(bmi)
+                move_arrow(bmi)
+        except ValueError:
+            display_error("Invalid input. Please enter numeric values.")
 
 def calculate_imperial_bmi():
     if weight_lbs is not None or height_in is not None:
-        bmi = Bmi_Calculator_Imperial(float(weight_lbs.get()), float(height_in.get()))
-        display_result(bmi)
-        move_arrow(bmi)
+        try:
+            weight = float(weight_lbs.get())
+            height = float(height_in.get())
+            if weight <= 0 or height <= 0:
+                display_error("Invalid input. Weight and height must be positive.")
+            else:
+                bmi = Bmi_Calculator_Imperial(weight, height)
+                display_result(bmi)
+                move_arrow(bmi)
+        except ValueError:
+            display_error("Invalid input. Please enter numeric values.")
 
 def display_result(bmi):
     global result_label
@@ -96,10 +115,16 @@ def move_arrow(bmi):
     arrow_width = 10  # Width of the arrow
 
     # Calculate the new x-coordinate based on the BMI value
-    if bmi < 18.5:
-        x_pos -= arrow_width*15  # Move left
-    elif bmi > 25:
-        x_pos += arrow_width*15  # Move right
+    if bmi < 18.5: #underweight
+        x_pos -= arrow_width * 15  # Move left
+    elif bmi > 25 and bmi < 29.9: #overweight
+        x_pos += arrow_width  # Move right
+    elif bmi > 18.5 and bmi < 24.9: #normal
+        x_pos -= arrow_width * 7.5
+    elif bmi > 30 and bmi < 34.9:
+        x_pos += arrow_width * 7.5
+    elif bmi > 35:
+        x_pos += arrow_width * 15
 
     canvas.coords(arrow, x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width)  # Update the arrow position
 
@@ -113,6 +138,14 @@ def Bmi_Calculator_Imperial(weightI, heightI):
     h = (heightI ** 2)
     return (w / h) * 703
 
+def display_error(message):
+    global error_label
+    if error_label is None:
+        error_label = tk.Label(input_frame, text=message, fg='red')
+        error_label.pack()
+    else:
+        error_label.config(text=message)
+
 root = tk.Tk()
 root.title('BMI Calculator by BodyCalc+')
 root.geometry("800x600")
@@ -121,7 +154,7 @@ root.resizable(width=False, height=False)
 canvas = tk.Canvas(root, width=800, height=550)
 canvas.pack()
 
-bg_image = tk.PhotoImage(file="BMIBgF.png")
+bg_image = tk.PhotoImage(file="BMIBg Final.png")
 canvas.create_image(0, 0, anchor=tk.NW, image=bg_image)
 
 input_frame = tk.Frame(root, bg='white')
@@ -141,6 +174,6 @@ quit_button.pack(side=tk.BOTTOM)
 x_pos = 400  
 y_pos = 350  
 arrow_width = 10  
-arrow = canvas.create_polygon(x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width, fill='red')
+arrow = canvas.create_polygon(x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width, fill='black')
 
 root.mainloop()
