@@ -100,7 +100,7 @@ canvas = tk.Canvas(root, width=800, height=550)
 canvas.pack()
 
 
-bg_image = tk.PhotoImage(file="BMIBg.png")
+bg_image = tk.PhotoImage(file="BMIBgF.png")
 canvas.create_image(0, 0, anchor=tk.NW, image=bg_image)
 
 
