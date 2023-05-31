@@ -96,10 +96,16 @@ def move_arrow(bmi):
     arrow_width = 10  # Width of the arrow
 
     # Calculate the new x-coordinate based on the BMI value
-    if bmi < 18.5:
-        x_pos -= arrow_width*15  # Move left
-    elif bmi > 25:
-        x_pos += arrow_width*15  # Move right
+    if bmi < 18.5: #underweight
+        x_pos -= arrow_width * 15  # Move left
+    elif bmi > 25 and bmi < 29.9: #overweight
+        x_pos += arrow_width  # Move right
+    elif bmi > 18.5 and bmi < 24.9: #normal
+        x_pos -= arrow_width * 7.5
+    elif bmi > 30 and bmi < 34.9:
+        x_pos += arrow_width * 7.5
+    elif bmi > 35:
+        x_pos += arrow_width * 15
 
     canvas.coords(arrow, x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width)  # Update the arrow position
 
@@ -121,7 +127,7 @@ root.resizable(width=False, height=False)
 canvas = tk.Canvas(root, width=800, height=550)
 canvas.pack()
 
-bg_image = tk.PhotoImage(file="BMIBgF.png")
+bg_image = tk.PhotoImage(file="BMIBg Final.png")
 canvas.create_image(0, 0, anchor=tk.NW, image=bg_image)
 
 input_frame = tk.Frame(root, bg='white')
@@ -141,6 +147,6 @@ quit_button.pack(side=tk.BOTTOM)
 x_pos = 400  
 y_pos = 350  
 arrow_width = 10  
-arrow = canvas.create_polygon(x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width, fill='red')
+arrow = canvas.create_polygon(x_pos, y_pos - arrow_width, x_pos - arrow_width, y_pos + arrow_width, x_pos + arrow_width, y_pos + arrow_width, fill='black')
 
 root.mainloop()
