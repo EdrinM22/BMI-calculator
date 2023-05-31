@@ -53,8 +53,12 @@ def reset_clicked():
         result_label = None
     if input_frame:
         input_frame.destroy()
-    metrics_button.pack(side=tk.LEFT)  # Display the metrics_button
-    imperial_button.pack(side=tk.LEFT)  # Display the imperial_button
+    input_frame = tk.Frame(root, bg='white')  # Create input_frame
+    input_frame.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
+    metrics_button = tk.Button(input_frame, text="Metrics", command=metrics_clicked)
+    metrics_button.pack(side=tk.LEFT)
+    imperial_button = tk.Button(input_frame, text="Imperial", command=imperial_clicked)
+    imperial_button.pack(side=tk.LEFT)
 
 def quit_clicked():
     root.destroy()
@@ -109,10 +113,6 @@ def Bmi_Calculator_Imperial(weightI, heightI):
     h = (heightI ** 2)
     return (w / h) * 703
 
-# def clear_labels():
-#     for widget in input_frame.winfo_children():
-#         widget.destroy()
-
 root = tk.Tk()
 root.title('BMI Calculator by BodyCalc+')
 root.geometry("800x600")
@@ -127,13 +127,13 @@ canvas.create_image(0, 0, anchor=tk.NW, image=bg_image)
 input_frame = tk.Frame(root, bg='white')
 input_frame.place(relx=0.5, rely=0.1, anchor=tk.CENTER)
 
-metrics = tk.Button(input_frame, text="Metrics", command=metrics_clicked)
-metrics.pack(side=tk.LEFT)
-imperial = tk.Button(input_frame, text="Imperial", command=imperial_clicked)
-imperial.pack(side=tk.LEFT)
+metrics_button = tk.Button(input_frame, text="Metrics", command=metrics_clicked)
+metrics_button.pack(side=tk.LEFT)
+imperial_button = tk.Button(input_frame, text="Imperial", command=imperial_clicked)
+imperial_button.pack(side=tk.LEFT)
 
-reset = tk.Button(root, text="Reset", command=reset_clicked)
-reset.pack(side=tk.BOTTOM)
+reset_button = tk.Button(root, text="Reset", command=reset_clicked)
+reset_button.pack(side=tk.BOTTOM)
 
 quit_button = tk.Button(root, text="Quit", command=quit_clicked)
 quit_button.pack(side=tk.BOTTOM)
