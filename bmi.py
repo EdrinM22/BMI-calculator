@@ -138,6 +138,7 @@ def Bmi_Calculator_Imperial(weightI, heightI):
     h = (heightI ** 2)
     return (w / h) * 703
 
+#error handling
 def display_error(message):
     global error_label
     if error_label is None:
